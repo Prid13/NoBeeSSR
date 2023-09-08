@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>My Website</title>
+		<style>
+			body {
+				background: whitesmoke;
+				margin: 0;
+				font-family: 'Segoe UI';
+			}
+			main {
+				background: white;
+				width: 80%;
+				max-width: 1000px;
+				margin: 0 auto;
+				padding: 40px 20px;
+			}
+			header {
+				
+			}
+			header h1 {
+				text-align: center;
+				font-size: 3em;
+			}
+			.container {
+				display: flex;
+				flex-direction: column;
+				padding: 0 20px;
+			}
+			.search {
+				font-size: 1.5em;
+				padding: 12px;
+				background: #f3f4f6;
+				border: 2px solid grey;
+			}
+			.results {
+				display: flex;
+				flex-direction: column;
+				
+				margin-top: 30px;
+				border: 2px solid grey;
+				border-bottom-width: 5px;
+			}
+			.results > .item {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				
+				padding: 10px 15px;
+				padding-left: 5px;
+				background: whitesmoke;
+			}
+			.results > .item:not(:last-child) {
+				border-bottom: 1px solid #e5e5e5;
+			}
+				.results > .item:hover {
+					background: #dddddd;
+				}
+			.results > .item > .item-num {
+				width: 25px;
+				text-align: center;
+			}
+			.results > .item > .item-img {
+				height: 50px;
+			}
+				.results > .item > .item-img > img {
+					height: 100%;
+				}
+			.results > .item > .item-title {
+				flex-grow: 1;
+				color: #0053c4;
+				text-decoration: none;
+			}
+			.results > .item > .item-premiered {
+				
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<div class="container">
+			
+			<header>
+				<h1>Search TV Shows</h1>
+			</header>
+			
+			<input type="text" class="search" placeholder="Search for shows..." x-data @keyup.enter="search($event.target.value)" />
+			
+			<div class="results"></div>
+				
+			</div>
+		</main>
+		
+		<script src="alpine-ajax@0.2.1.min.js"></script>
+		<script src="alpinejs@3.13.0.min.js"></script>
+		<script src="easy-dom-util.js"></script>
+		<script>
+			document.querySelector('.search').focus();
+			
+			function search(q){
+				fetch('https://api.tvmaze.com/search/shows?q='+q)
+					.then(data => data.json())
+					.then(data => {
+						const results = document.querySelector('.results');
+						results.innerHTML = "";
+						for(var i = 0; i < data.length; i++){
+							const show = data[i].show;
+							const id = show.id;
+							const title = show.name;
+							const premiered = show.premiered;
+							const img = show.image ? show.image.medium : "https://placehold.co/50x70";
+							
+							results.append( newItem("#"+(i+1), id, title, premiered, img) );
+						}
+				});
+			}
+			
+			function newItem(num, id, title, premiered, img){
+				var $ = EasyDom;
+				return $.create('div').cls('item')
+					.append(
+					[
+						$.create('div').cls('item-num').text(num),
+						$.create('div').cls('item-img').appendSingle(
+							$.create('img').src(img)
+						),
+						$.create('a').cls('item-title').text(title).attr('href', 'show.html?id='+id),
+						$.create('div').cls('item-premiered').text(premiered)
+					]
+					)
+					.el;
+			}
+		</script>
+	</body>
+</html>
