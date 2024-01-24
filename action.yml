@@ -1,0 +1,15 @@
+name: 'Generate Static HTML Files'
+description: 'Use custom JS templating engine and generate static files from a template and JSON data file'
+
+inputs:
+  json-data-file-path
+  html-file-with-template
+  query-to-template-element
+  query-to-output-element
+
+outputs:
+  html-output
+
+runs:
+  using: 'node20'
+  main: 'index.js'
